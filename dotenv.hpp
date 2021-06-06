@@ -30,14 +30,72 @@ namespace dotenv {
     return string_parse;
   }
 
+  inline bool is_multine(std::string line, std::string &key_multiline, bool multiline) {
+    if (!(multiline)) {
+      std::string search_equal_quote = R"(=")";
+      std::size_t found = line.find(search_equal_quote);
+      if (found != std::string::npos) {
+        multiline = true;
+        key_multiline = line.substr(0, found);
+      }
+    }
+    return multiline;
+  }
+
+  inline bool is_end_of_multiline(std::string line) {
+    bool multiline = false;
+    int line_size = line.size();
+    if (line[line_size - 1] == '"') {
+      multiline = true;
+    }
+    return multiline;
+  }
+
+  inline std::string value_begin_multiline(std::string line) {
+    std::string search_equal_quote = R"(=")";
+    std::size_t found = line.find(search_equal_quote);
+    int size_line = line.size();
+    std::string value = line.substr(found + 2, size_line);
+    value = value + "\n";
+    return value;
+  }
+
+  inline std::string value_end_multline(std::string line) {
+    int size_line = line.size();
+    line.resize(size_line - 1);
+    return line;
+  }
+
   inline std::vector<std::map<std::string, std::string>> read_file_dotenv(std::string path_filename) {
     std::vector<std::map<std::string, std::string>> vector_of_future_env;
     std::fstream file(path_filename.c_str(), file.binary | file.in | file.out);
 
     std::string line;
+    std::string key_multi = "";
+    bool multiline = false;
+    bool end_of_multiline = false;
+    std::string value_multiline = "";
     while (std::getline(file, line)) {
       if (!(line[0] == '#')) {
-        vector_of_future_env.push_back(dotenv::parse_file_string(line));
+        multiline = dotenv::is_multine(line, key_multi, multiline);
+        end_of_multiline = dotenv::is_end_of_multiline(line);
+
+        if ((multiline) && (!(end_of_multiline))) {
+          if (dotenv::is_multine(line, key_multi, false)) {
+            value_multiline = dotenv::value_begin_multiline(line);
+          } else {
+            value_multiline = value_multiline + line + "\n";
+          }
+        } else if (multiline && end_of_multiline) {
+          value_multiline = value_multiline + dotenv::value_end_multline(line);
+          std::map<std::string, std::string> map_for_insert{{key_multi, value_multiline}};
+          vector_of_future_env.push_back(map_for_insert);
+          key_multi = "";
+          value_multiline = "";
+          multiline = false;
+        } else {
+          vector_of_future_env.push_back(dotenv::parse_file_string(line));
+        }
       }
     }
     return vector_of_future_env;
@@ -133,10 +191,11 @@ namespace dotenv {
 
   inline void use_dotenv_file(std::string path_filename, bool preserve = true) {
     std::vector<std::map<std::string, std::string>> vector_of_future_env = dotenv::read_file_dotenv(path_filename);
-
-    if (dotenv::is_vector_contains_ref(vector_of_future_env)) {
+    bool contains_ref;
+    do {
       dotenv::transform_in_final_vector(vector_of_future_env);
-    }
+      contains_ref = dotenv::is_vector_contains_ref(vector_of_future_env);
+    } while (contains_ref);
 
     if (!(preserve)) {
       dotenv::set_environment_without_preserve(vector_of_future_env);
