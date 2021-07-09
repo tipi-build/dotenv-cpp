@@ -7,7 +7,7 @@ This library is cross-platform and without dependency
 ## How it works 
 You can use the main function as follows 
 ```
-doting::use_dotenv_file( path_filename,preserve )
+dotenv::use_dotenv_file( path_filename,preserve )
 ```
 
 If preserve is true then if your environment file then if you already have environment values they will not be overwrite.
