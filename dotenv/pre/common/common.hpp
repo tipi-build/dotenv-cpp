@@ -17,9 +17,20 @@ namespace dotenv::pre::common {
 #endif
   }
 
-void print_map(const std::map<std::string, std::string> &map_to_print) {
+  void print_map(const std::map<std::string, std::string> &map_to_print) {
     for (const auto &[key, value] : map_to_print) {
       std::cout << key << "  " << value << std::endl;
     }
   }
+
+  inline bool is_string_contains_ref(std::string value) {
+    bool contains_ref = false;
+    std::string search = "${";
+    std::size_t found = value.find(search);
+    if (found != std::string::npos) {
+      contains_ref = true;
+    }
+    return contains_ref;
+  }
+
 }

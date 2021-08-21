@@ -9,7 +9,7 @@
 #include <dotenv/pre/common/common.hpp>
 
 namespace dotenv::pre::usefile {
-    
+
   inline std::map<std::string, std::string> parse_file_string(std::string line) {
     std::string search_equal = "=";
     std::size_t found = line.find(search_equal);
