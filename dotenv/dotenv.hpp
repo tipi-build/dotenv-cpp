@@ -48,4 +48,21 @@ namespace dotenv {
     }
     dotenv::detail::formap::print_map_to_display(futur_env);
   }
+
+  inline void use_dotenv_file_map(std::string path_filename,std::map<std::string, std::string> futur_env,bool preserve = true)
+  {
+    use_dotenv_file(path_filename,preserve);
+    std::vector<std::map<std::string, std::string>> vector_of_future_env =
+        dotenv::detail::usefile::read_file_dotenv(path_filename);
+      for (auto map_for_env : vector_of_future_env )
+      {
+        for (const auto &[key, value] : map_for_env) {
+          auto key_search = futur_env.find(key);
+          if (key_search != futur_env.end()) {
+          futur_env.erase(key);
+          }
+        }
+      }
+    use_dotenv_map(futur_env,preserve);
+  }
 }
