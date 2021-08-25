@@ -6,9 +6,9 @@
 #include <string>
 #include <stdlib.h>
 #include <utility>
-#include <dotenv/pre/common/common.hpp>
+#include <dotenv/detail/common/common.hpp>
 
-namespace dotenv::pre::usefile {
+namespace dotenv::detail::usefile {
 
   inline std::map<std::string, std::string> parse_file_string(std::string line) {
     std::string search_equal = "=";
@@ -73,24 +73,24 @@ namespace dotenv::pre::usefile {
     std::string value_multiline = "";
     while (std::getline(file, line)) {
       if (!(line[0] == '#')) {
-        multiline = dotenv::pre::usefile::is_multine(line, key_multi, multiline);
-        end_of_multiline = dotenv::pre::usefile::is_end_of_multiline(line);
+        multiline = dotenv::detail::usefile::is_multine(line, key_multi, multiline);
+        end_of_multiline = dotenv::detail::usefile::is_end_of_multiline(line);
 
         if ((multiline) && (!(end_of_multiline))) {
-          if (dotenv::pre::usefile::is_multine(line, key_multi, false)) {
-            value_multiline = dotenv::pre::usefile::value_begin_multiline(line);
+          if (dotenv::detail::usefile::is_multine(line, key_multi, false)) {
+            value_multiline = dotenv::detail::usefile::value_begin_multiline(line);
           } else {
             value_multiline = value_multiline + line + "\n";
           }
         } else if (multiline && end_of_multiline) {
-          value_multiline = value_multiline + dotenv::pre::usefile::value_end_multline(line);
+          value_multiline = value_multiline + dotenv::detail::usefile::value_end_multline(line);
           std::map<std::string, std::string> map_for_insert{{key_multi, value_multiline}};
           vector_of_future_env.push_back(map_for_insert);
           key_multi = "";
           value_multiline = "";
           multiline = false;
         } else {
-          vector_of_future_env.push_back(dotenv::pre::usefile::parse_file_string(line));
+          vector_of_future_env.push_back(dotenv::detail::usefile::parse_file_string(line));
         }
       }
     }
@@ -149,7 +149,7 @@ namespace dotenv::pre::usefile {
           ref_name = value.substr(found_begin + size_search_d, legnth_to_save);
           int only_ref_complete = (search_dollar_begin_bracket + ref_name + search_end_bracket).size();
 
-          std::string ref_value = dotenv::pre::usefile::found_value_of_reference(vector_of_future_env, ref_name);
+          std::string ref_value = dotenv::detail::usefile::found_value_of_reference(vector_of_future_env, ref_name);
           transformed_value.replace(found_begin, only_ref_complete, ref_value);
           std::map<std::string, std::string> map_for_insert{{key, transformed_value}};
           vector_of_future_env.push_back(map_for_insert);
@@ -164,7 +164,7 @@ namespace dotenv::pre::usefile {
     for (auto vector : vector_of_future_env) {
       for (const auto &[key, value] : vector) {
         if (!(std::getenv(key.c_str()))) {
-          dotenv::pre::common::set_environment(key.c_str(), value.c_str());
+          dotenv::detail::common::set_environment(key.c_str(), value.c_str());
         }
       }
     }
@@ -173,7 +173,7 @@ namespace dotenv::pre::usefile {
   inline void set_environment_without_preserve(std::vector<std::map<std::string, std::string>> vector_of_future_env) {
     for (auto vector : vector_of_future_env) {
       for (const auto &[key, value] : vector) {
-        dotenv::pre::common::set_environment(key.c_str(), value.c_str());
+        dotenv::detail::common::set_environment(key.c_str(), value.c_str());
       }
     }
   }

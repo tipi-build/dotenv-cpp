@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <utility>
 
-namespace dotenv::pre::common {
+namespace dotenv::detail::common {
 
   inline void set_environment(std::string key, std::string value) {
 #ifdef _WIN32
