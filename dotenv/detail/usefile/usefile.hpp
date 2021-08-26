@@ -177,4 +177,15 @@ namespace dotenv::detail::usefile {
       }
     }
   }
+
+
+ void print_dotenv_file_to_display(std::vector<std::map<std::string, std::string>> vector_of_env) {
+    std::cout << "Your environmental values are : " << std::endl;
+    for (auto vector : vector_of_env) {
+      for (const auto &[key, value] : vector) {
+        std::string value_env = std::getenv(key.c_str());  
+        std::cout << "- Key : " << key << "\n- Value : " << value_env << std::endl;
+      }
+    }
+  }
 }
