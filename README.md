@@ -24,7 +24,7 @@ WKbxW+yHb//5AAAAFWx1Y2xhbWJvdXJATUJQLWRlLUx1YwECAwQF
 If you want to test my program with the test program just remember to change the path to the file 
 
 ## Usage
-[Simply use via nxxm](https://nxxm.github.io/), `.nxxm/deps` file : 
+[Simply use via tipi](https://nxxm.github.io/), `.tipi/deps` file : 
 ```
 {
   "lambourl/dotenv-cpp" : {"@" : "main"}

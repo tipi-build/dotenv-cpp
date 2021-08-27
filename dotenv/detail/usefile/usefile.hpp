@@ -5,14 +5,10 @@
 #include <fstream>
 #include <string>
 #include <stdlib.h>
+#include <utility>
+#include <dotenv/detail/common/common.hpp>
 
-namespace dotenv {
-
-  void print_map(const std::map<std::string, std::string> &map_to_print) {
-    for (const auto &[key, value] : map_to_print) {
-      std::cout << key << "  " << value << std::endl;
-    }
-  }
+namespace dotenv::detail::usefile {
 
   inline std::map<std::string, std::string> parse_file_string(std::string line) {
     std::string search_equal = "=";
@@ -77,24 +73,24 @@ namespace dotenv {
     std::string value_multiline = "";
     while (std::getline(file, line)) {
       if (!(line[0] == '#')) {
-        multiline = dotenv::is_multine(line, key_multi, multiline);
-        end_of_multiline = dotenv::is_end_of_multiline(line);
+        multiline = dotenv::detail::usefile::is_multine(line, key_multi, multiline);
+        end_of_multiline = dotenv::detail::usefile::is_end_of_multiline(line);
 
         if ((multiline) && (!(end_of_multiline))) {
-          if (dotenv::is_multine(line, key_multi, false)) {
-            value_multiline = dotenv::value_begin_multiline(line);
+          if (dotenv::detail::usefile::is_multine(line, key_multi, false)) {
+            value_multiline = dotenv::detail::usefile::value_begin_multiline(line);
           } else {
             value_multiline = value_multiline + line + "\n";
           }
         } else if (multiline && end_of_multiline) {
-          value_multiline = value_multiline + dotenv::value_end_multline(line);
+          value_multiline = value_multiline + dotenv::detail::usefile::value_end_multline(line);
           std::map<std::string, std::string> map_for_insert{{key_multi, value_multiline}};
           vector_of_future_env.push_back(map_for_insert);
           key_multi = "";
           value_multiline = "";
           multiline = false;
         } else {
-          vector_of_future_env.push_back(dotenv::parse_file_string(line));
+          vector_of_future_env.push_back(dotenv::detail::usefile::parse_file_string(line));
         }
       }
     }
@@ -153,7 +149,7 @@ namespace dotenv {
           ref_name = value.substr(found_begin + size_search_d, legnth_to_save);
           int only_ref_complete = (search_dollar_begin_bracket + ref_name + search_end_bracket).size();
 
-          std::string ref_value = dotenv::found_value_of_reference(vector_of_future_env, ref_name);
+          std::string ref_value = dotenv::detail::usefile::found_value_of_reference(vector_of_future_env, ref_name);
           transformed_value.replace(found_begin, only_ref_complete, ref_value);
           std::map<std::string, std::string> map_for_insert{{key, transformed_value}};
           vector_of_future_env.push_back(map_for_insert);
@@ -163,19 +159,12 @@ namespace dotenv {
       }
     }
   }
-  inline void set_environment(std::string key, std::string value) {
-#ifdef _WIN32
-    _putenv_s(key.c_str(), value.c_str());
-#else
-    setenv(key.c_str(), value.c_str(), 1);
-#endif
-  }
 
   inline void set_environment_with_preserve(std::vector<std::map<std::string, std::string>> vector_of_future_env) {
     for (auto vector : vector_of_future_env) {
       for (const auto &[key, value] : vector) {
         if (!(std::getenv(key.c_str()))) {
-          dotenv::set_environment(key.c_str(), value.c_str());
+          dotenv::detail::common::set_environment(key.c_str(), value.c_str());
         }
       }
     }
@@ -184,23 +173,19 @@ namespace dotenv {
   inline void set_environment_without_preserve(std::vector<std::map<std::string, std::string>> vector_of_future_env) {
     for (auto vector : vector_of_future_env) {
       for (const auto &[key, value] : vector) {
-        dotenv::set_environment(key.c_str(), value.c_str());
+        dotenv::detail::common::set_environment(key.c_str(), value.c_str());
       }
     }
   }
 
-  inline void use_dotenv_file(std::string path_filename, bool preserve = true) {
-    std::vector<std::map<std::string, std::string>> vector_of_future_env = dotenv::read_file_dotenv(path_filename);
-    bool contains_ref;
-    do {
-      dotenv::transform_in_final_vector(vector_of_future_env);
-      contains_ref = dotenv::is_vector_contains_ref(vector_of_future_env);
-    } while (contains_ref);
 
-    if (!(preserve)) {
-      dotenv::set_environment_without_preserve(vector_of_future_env);
-    } else {
-      dotenv::set_environment_with_preserve(vector_of_future_env);
+ void print_dotenv_file_to_display(std::vector<std::map<std::string, std::string>> vector_of_env) {
+    std::cout << "Your environmental values are : " << std::endl;
+    for (auto vector : vector_of_env) {
+      for (const auto &[key, value] : vector) {
+        std::string value_env = std::getenv(key.c_str());  
+        std::cout << "- Key : " << key << "\n- Value : " << value_env << std::endl;
+      }
     }
   }
 }
