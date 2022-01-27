@@ -6,9 +6,9 @@
 #include <string>
 #include <stdlib.h>
 #include <utility>
-#include <dotenv/pre/common/common.hpp>
+#include <dotenv/detail/common/common.hpp>
 
-namespace dotenv::pre::formap {
+namespace dotenv::detail::formap {
 
   inline bool is_map_contains_ref(std::map<std::string, std::string> checks_maps) {
     bool contains_ref = false;
@@ -46,7 +46,7 @@ namespace dotenv::pre::formap {
     std::string search_end_bracket = "}";
 
     for (auto &map : maps_of_future_env) {
-      bool contains_ref = dotenv::pre::common::is_string_contains_ref(map.second);
+      bool contains_ref = dotenv::detail::common::is_string_contains_ref(map.second);
       if (contains_ref) {
         std::string ref_name;
         std::size_t found_begin = map.second.find(search_dollar_begin_bracket);
@@ -56,7 +56,7 @@ namespace dotenv::pre::formap {
           int legnth_to_save = found_end - (found_begin + size_search_d);
           ref_name = map.second.substr(found_begin + size_search_d, legnth_to_save);
           int only_ref_complete = (search_dollar_begin_bracket + ref_name + search_end_bracket).size();
-          std::string ref_value = dotenv::pre::formap::found_value_of_reference_map(maps_of_future_env, ref_name);
+          std::string ref_value = dotenv::detail::formap::found_value_of_reference_map(maps_of_future_env, ref_name);
           transformed_value.replace(found_begin, only_ref_complete, ref_value);
           map.second = transformed_value;
         }
@@ -64,26 +64,32 @@ namespace dotenv::pre::formap {
     }
   }
 
-  inline void set_environment_with_preserve_for_map(std::map<std::string, std::string> future_env) {
+  inline std::map<std::string, std::string> set_environment_with_preserve_for_map(std::map<std::string, std::string> future_env) {
+    std::map<std::string, std::string> map_set_in_environment;
     for (auto map : future_env) {
+      std::string key = map.first;
+      std::string value;
       if (!(std::getenv(map.first.c_str()))) {
-        dotenv::pre::common::set_environment(map.first.c_str(), map.second.c_str());
+        value = map.second;
+        dotenv::detail::common::set_environment(map.first.c_str(), map.second.c_str());
+      }else {
+        value = std::getenv(map.first.c_str());
       }
+      std::pair<std::string, std::string> pair_for_insert {key,value};
+      map_set_in_environment.insert(pair_for_insert);
     }
+    return map_set_in_environment;
   }
 
-  inline void set_environment_without_preserve_for_map(std::map<std::string, std::string> future_env) {
+  inline std::map<std::string, std::string> set_environment_without_preserve_for_map(std::map<std::string, std::string> future_env) {
+    std::map<std::string, std::string> map_set_in_environment;
     for (auto map : future_env) {
-      dotenv::pre::common::set_environment(map.first.c_str(), map.second.c_str());
+      std::string key = map.first;
+      std::string value=map.second;
+      std::pair<std::string, std::string> pair_for_insert {key,value};
+      map_set_in_environment.insert(pair_for_insert);
+      dotenv::detail::common::set_environment(map.first.c_str(), map.second.c_str());
     }
+    return map_set_in_environment;
   }
-
-  void print_map_to_display(const std::map<std::string, std::string> &map_to_print) {
-    std::cout << "Your environmental values are : " << std::endl;
-    for (auto map : map_to_print) {
-      std::string value = std::getenv(map.first.c_str());
-      std::cout << "- Key : " << map.first << "\n- Value : " << value << std::endl;
-    }
-  }
-
 }
