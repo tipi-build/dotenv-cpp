@@ -40,7 +40,7 @@ struct Myenv {
 
 
   inline void use_dotenv_file(){
-    std::map<std::string, std::string> maps_from_dotenv = dotenv::detail::usefile::read_file_dotevn(path_filename_);
+    std::map<std::string, std::string> maps_from_dotenv = dotenv::detail::usefile::read_file_dotenv(path_filename_);
     std::map<std::string, std::string> tempory_maps_env_ = maps_for_env_;
     for (const auto &[key, value] : maps_from_dotenv) {
       auto key_search = tempory_maps_env_.find(key);

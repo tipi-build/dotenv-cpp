@@ -37,8 +37,8 @@
         if (found != std::string::npos) {
             key = line.substr(0, found);
             value = line.substr(found + 1, size_line);
-            if ((line[size_line-1]=='r') && (line[size_line-2]=='\\')){
-                value.resize(value.size()-2);
+            if ((line[size_line-1]=='\r')){
+                value.resize(value.size()-1);
             }
             
     }
@@ -62,9 +62,9 @@
      }
 
 
-    std::map<std::string, std::string> read_file_dotevn(std::string path_filename){
+    std::map<std::string, std::string> read_file_dotenv(std::string path_filename){
         std::map<std::string, std::string> map_for_environment;
-        std::fstream file(path_filename.c_str(), file.binary | file.in | file.out);
+        std::fstream file(path_filename.c_str(), std::ios::binary | std::ios::in | std::ios::out);
         std::string line;
         bool is_multi_line = false;
         bool is_end_of_multi_line = false;
