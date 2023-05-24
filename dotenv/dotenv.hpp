@@ -24,6 +24,12 @@ struct Myenv {
     maps_for_env_ = maps_for_env;
   }
 
+    Myenv(std::string path_filename=".env", bool preserve = true){
+    path_filename_ = path_filename;
+    preserve_ = preserve;
+    maps_for_env_ = {};
+  }
+
   inline void getenv_or_value(std::string environment_name, std::string default_value) {
     if (!(std::getenv(environment_name.c_str()))) {
       dotenv::detail::common::set_environment(environment_name.c_str(), default_value.c_str());

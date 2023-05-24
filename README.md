@@ -1,16 +1,19 @@
 # dotenv-cpp
 
 Simple helper library.
-You can just compile with nxxm without any dependencies
+You can just compile with tipi without any dependencies
 This library is cross-platform and without dependency
 
 ## How it works 
-You can use the main function as follows 
+You can use the struct as follows 
+
 ```
-dotenv::use_dotenv_file( path_filename,preserve )
+dotenv::Myenv Env_app( env_map, path_filename, preserve )
+Env_app.use_dotenv_file();
 ```
 
 If preserve is true then if your environment file then if you already have environment values they will not be overwrite.
+And for maps is an std::map<std::string,std::string>  which contains some environement variable.
 And for path_filename give it a string which contains the path of your environment file.
 This lib can support multi-line but on some condition you must have a multiline with a value that starts and ends with "
 for example for multi-line :
