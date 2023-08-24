@@ -8,7 +8,7 @@ This library is cross-platform and without dependency
 You can use the struct as follows 
 
 ```
-dotenv::Myenv Env_app( env_map, path_filename, preserve )
+dotenv::dotenv Env_app( env_map, path_filename, preserve )
 Env_app.use_dotenv_file();
 ```
 
