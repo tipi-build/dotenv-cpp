@@ -31,9 +31,31 @@ namespace dotenv::detail::formap {
         break;
       }
     }
+
+
+    if (value_to_return.empty()) {
+      value_to_return = dotenv::detail::common::get(ref);
+      if (value_to_return.empty()){
+        std::cout << "To use a reference in the values of the map  you have to write correctly (warning it is case "
+                    "sensitive) the name and make that it exists"
+                  << std::endl;
+        std::exit(1);
+      }
+    }
+    return value_to_return;
+  }
+
+  inline std::string found_value_of_environment(std::map<std::string, std::string> &maps_for_env, std::string &ref) {
+    std::string value_to_return;
+    for (auto map_for_env : maps_for_env) {
+      if (map_for_env.first == ref) {
+        value_to_return = map_for_env.second;
+        break;
+      }
+    }
     if (value_to_return.empty()) {
       std::cout << "To use a reference in the values of the map  you have to write correctly (warning it is case "
-                   "sensitive) the name and make that it exists"
+                << "sensitive) the name and make that it exists\n"
                 << std::endl;
       std::exit(1);
     }
@@ -57,6 +79,7 @@ namespace dotenv::detail::formap {
           ref_name = map.second.substr(found_begin + size_search_d, legnth_to_save);
           int only_ref_complete = (search_dollar_begin_bracket + ref_name + search_end_bracket).size();
           std::string ref_value = dotenv::detail::formap::found_value_of_reference_map(maps_of_future_env, ref_name);
+
           transformed_value.replace(found_begin, only_ref_complete, ref_value);
           map.second = transformed_value;
         }

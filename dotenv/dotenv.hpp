@@ -18,7 +18,7 @@ namespace dotenv {
 
 struct Myenv {
 
-  Myenv(std::map<std::string,std::string>maps_for_env = {},std::string path_filename=".env",bool preserve = true){
+  Myenv(std::map<std::string,std::string>maps_for_env = {} ,std::string path_filename=".env", bool preserve = true){
     path_filename_ = path_filename;
     preserve_ = preserve;
     maps_for_env_ = maps_for_env;
@@ -35,15 +35,6 @@ struct Myenv {
       dotenv::detail::common::set_environment(environment_name.c_str(), default_value.c_str());
     }
   }
-
-  inline std::string get(std::string environment_name){
-    std::string value="";
-    if (std::getenv(environment_name.c_str())){
-      value =std::getenv(environment_name.c_str());
-    }
-    return value;
-  }
-
 
   inline void use_dotenv_file(){
     std::map<std::string, std::string> maps_from_dotenv = dotenv::detail::usefile::read_file_dotenv(path_filename_);

@@ -23,6 +23,14 @@
      }
    }
 
+  inline std::string get(std::string environment_name){
+    std::string value="";
+    if (std::getenv(environment_name.c_str())){
+      value =std::getenv(environment_name.c_str());
+    }
+    return value;
+  }
+
    inline bool is_string_contains_ref(std::string value) {
      bool contains_ref = false;
      std::string search = "${";
