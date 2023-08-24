@@ -16,15 +16,15 @@
 namespace dotenv {
 
 
-struct dotenv {
+struct dotenv_object {
 
-  dotenv(std::map<std::string,std::string>maps_for_env = {} ,std::string path_filename=".env", bool preserve = true){
+  dotenv_object(std::map<std::string,std::string>maps_for_env = {} ,std::string path_filename=".env", bool preserve = true){
     path_filename_ = path_filename;
     preserve_ = preserve;
     maps_for_env_ = maps_for_env;
   }
 
-    dotenv(std::string path_filename=".env", bool preserve = true){
+    dotenv_object(std::string path_filename=".env", bool preserve = true){
     path_filename_ = path_filename;
     preserve_ = preserve;
     maps_for_env_ = {};

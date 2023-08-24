@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
                                              ,{"CRIM6", "William Dalton"},{"CRIM7", "Gratton Dalton"}
                                              ,{"CRIMINAL_FAMILY", "${CRIM4} & ${CRIM5} & ${CRIM6} & ${CRIM7}"}};
   
-  dotenv::dotenv Env_app(far_west,"/Users/luclambour/workspace/tipi-build/dotenv-cpp/test/.env",true);
+  dotenv::dotenv_object Env_app(far_west,"/Users/luclambour/workspace/tipi-build/dotenv-cpp/test/.env",true);
   Env_app.use_dotenv_file();
   Env_app.print_map_env();
   return 0;
