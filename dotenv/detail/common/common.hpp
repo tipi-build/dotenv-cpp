@@ -25,7 +25,7 @@
 
   inline std::string get(std::string environment_name){
     std::string value="";
-    if (std::getenv(environment_name.c_str())){
+    if (std::getenv(environment_name.c_str()) != nullptr){
       value =std::getenv(environment_name.c_str());
     }
     return value;
